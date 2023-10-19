@@ -38,6 +38,21 @@ export const getAllHotels = async (req, res, next) => {
     next(error);
   }
 };
+export const countByCity = async (req, res, next) => {
+  const cities = req.query.cities.split(",")
+  try {
+    const list  = await Promise.all(cities.map(async city => {
+      const regex = new RegExp(`^${city}$`, 'i');
+
+      const count = await Hotel.countDocuments({ city: { $regex: regex } });
+
+      return count;
+    }))
+    res.status(200).json(list);
+  } catch (error) {
+    next(error);
+  }
+};
 export const getHotel = async (req, res, next) => {
   try {
     const hotel = await Hotel.findById(req.params.id);
